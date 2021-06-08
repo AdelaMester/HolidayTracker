@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Past trips
+{% endblock %}
+{% block main %}
+        <head>
+
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        </head>
+        <body>
+          <form>
+            <button formaction="https://www.airbnb.co.uk/"> AirBnb </button>
+            <button formaction="https://www.booking.com/index.html?aid=376362;label=booking-name-76kIZu_r4nV*03zZ39ZGBAS461484956115:pl:ta:p1:p22,563,000:ac:ap:neg:fi:tiaud-898142578049:kwd-65526620:lp9044974:li:dec:dm:ppccp=UmFuZG9tSVYkc2RlIyh9YTQUGSsRwx9_llxDbUbGjaI;ws=&gclid=Cj0KCQiAs5eCBhCBARIsAEhk4r4mDX90izMXsKLImSVnfZmWE6d8O2rG5TFbriNwYh82qhWMcdRrq70aAq6-EALw_wcB"> Booking </button>
+              <div class="photo">
+              <a target="_blank" href="HOLIDAY.jpg">
+                  <img src="static/HOLIDAY.jpg" width="100%" height="80%"
+                  alt="Live your life">
+              </a>
+            </div>
+          </form>
+        </body>
+{% endblock %}

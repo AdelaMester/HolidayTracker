@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Track your trip
+{% endblock %}
+{% block main %}
+        <head>
+
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <input type="hidden" id="pinall" value="{{pins}}">
+
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+            <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbQdmutC2XAZE1C7ZUvolgKv-3pHwOl_w&callback=initMap&libraries=&v=weekly"></script>
+            <div class="wrapper"></div>
+            <title>Track your trip</title>
+            <script>
+                var markers = [];
+                var uniqueId = 1;
+                window.onload = function () {
+                    var mapOptions = {
+                        center: new google.maps.LatLng(52.3555, 1.1743),
+                        zoom: 3,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    };
+                    var map = new google.maps.Map(document.getElementById("mymap"), mapOptions);
+                    var x = eval(document.getElementById("pinall").value);
+                    console.log("eval: "+x)
+                    if ( x )
+                    {
+
+                        for ( var i = 0; i < x.length; i++ )
+                        {
+                            console.log("coordinates: "+x[i]['latitude'] +" "+ x[i]['longitude']);
+                            var marker = new google.maps.Marker({
+                            position: {
+                                lat: parseFloat(x[i]['latitude']),
+                                lng:x[i]['longitude']
+                                },
+                                map: map
+                            });
+                            markers.push(marker);
+                        }
+
+                    }
+
+
+                    var location;
+                    //On click, set marker
+                    google.maps.event.addListener(map, 'click', function (e) {
+                        location = e.latLng;
+                        console.log("location=" + location);
+                        var marker = new google.maps.Marker({
+                            position: location,
+                            map: map
+                        });
+
+                        //Make request to controller and save into db
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/past_trips");
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.send(JSON.stringify(location));
+                        //print in javascript
+                        //console.log("ccc: "+location);
+
+                        //Each marker will have a unique ID
+                        marker.id = uniqueId;
+                        uniqueId++;
+
+
+                        google.maps.event.addListener(marker, "click", function (e) {
+                            var content = 'Latitude: ' + location.lat() + '<br />Longitude: ' + location.lng();
+                            content += "<br /><input type = 'button' value = 'Delete' onclick = 'DeleteMarker(" + marker.id + ","+location.lat()+","+location.lng()+");' value = 'Delete' />";
+                            var infoWindow = new google.maps.InfoWindow({
+                                content: content
+                            });
+                            infoWindow.open(map, marker);
+                        });
+                        markers.push(marker);
+                    });
+                };
+                function DeleteMarker(id, lat, lng) {
+                    for (var i = 0; i < markers.length; i++) {
+                        if (markers[i].id == id) {
+                            markers[i].setMap(null);
+
+                            //Remove marker from array
+                            markers.splice(i, 1);
+
+                            var xhr = new XMLHttpRequest();
+                            var new_location = {};
+                            new_location.lat = lat;
+                            new_location.lng = lng;
+                            xhr.open("DELETE", "/past_trips");
+                            xhr.setRequestHeader('Content-Type', 'application/json');
+                            xhr.send(JSON.stringify(new_location));
+                            //print in javascript
+                            console.log("message: " +new_location.lat +" "+ new_location.lng);
+
+
+                            return;
+                        }
+                    }
+                }
+            </script>
+        </head>
+
+        <div id="map"></div>
+        <body>
+            <div id="mymap" style="width: 100%; height: 750px"></div>
+            <br />
+
+        </body>
+{% endblock %}
