@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+  - deploy
+
+sast:
+  stage: build
+  script:
+   - docker pull secfigo/bandit
+   - docker run --user $(id -u):$(id -g) -v $(pwd):/src --rm secfigo/bandit bandit -r /src
+  allow_failure: true
+
