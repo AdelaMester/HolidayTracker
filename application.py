@@ -60,15 +60,17 @@ def index():
 @app.route("/past_trips", methods = ["GET", "POST" , "DELETE"])
 @login_required
 def past_trips():
-    """Show past trips"""
+    """Save past trips"""
     if request.method == "POST":
+        #get the parameter data from the request
         request_data = request.get_json()
         print(request_data)
+        #I used session[user_id because i wanted to know which user has those specific locations]
         db.execute("INSERT INTO Past_trips (latitude, longitude, session_id) VALUES(?,?,?)", request_data['lat'], request_data['lng'], session['user_id'])
         return "ok"
 
 
-
+    """Show past trips"""
     if request.method == "GET":
         Marker = db.execute("SELECT latitude,longitude FROM Past_trips WHERE session_id=(?)", session['user_id'])
         print("we send the following var:"+ str(Marker))
@@ -79,6 +81,8 @@ def past_trips():
             return render_template("past_trips.html")
         return render_template("past_trips.html", pins=Marker)
 
+
+    """Delete past trips"""
     if request.method == "DELETE":
         request_data = request.get_json()
         print(request_data)

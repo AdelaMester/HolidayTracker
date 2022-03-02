@@ -7,6 +7,7 @@
         <head>
 
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <!-- 'pins' variable contains the lat and long of the marker  -->
             <input type="hidden" id="pinall" value="{{pins}}">
 
 
@@ -17,28 +18,36 @@
             <script>
                 var markers = [];
                 var uniqueId = 1;
+                //when the window is loaded, the function will run
                 window.onload = function () {
+                    //the position of the map view when page is loaded
                     var mapOptions = {
                         center: new google.maps.LatLng(52.3555, 1.1743),
                         zoom: 3,
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     };
+                    //instatiated a new object map which creates a map inside 'mymap' div
                     var map = new google.maps.Map(document.getElementById("mymap"), mapOptions);
+                    //eval here converts our 'value' to an array of arrays
                     var x = eval(document.getElementById("pinall").value);
                     console.log("eval: "+x)
+                    //validation in case the user has no pins on the map
+                    //(as in the function bellow won't be executed if there are no pins)
                     if ( x )
                     {
-
+                        //parse the array till its end and creates the pins
                         for ( var i = 0; i < x.length; i++ )
                         {
                             console.log("coordinates: "+x[i]['latitude'] +" "+ x[i]['longitude']);
+                            //pins are created for each set of x[i]['latitude'], x[i]['longitude']
                             var marker = new google.maps.Marker({
                             position: {
                                 lat: parseFloat(x[i]['latitude']),
-                                lng:x[i]['longitude']
+                                lng: x[i]['longitude']
                                 },
                                 map: map
                             });
+                            //adds the 'marker' in markers array
                             markers.push(marker);
                         }
 
@@ -56,9 +65,13 @@
                         });
 
                         //Make request to controller and save into db
+                        //instanciated the xhr object of type XMLHttpRequest class
                         var xhr = new XMLHttpRequest();
+                        //the first method of this class is 'open' wich initializes a request
                         xhr.open("POST", "/past_trips");
+                        //we set the headers of this request
                         xhr.setRequestHeader('Content-Type', 'application/json');
+                        //send the request with the 'location' parameter
                         xhr.send(JSON.stringify(location));
                         //print in javascript
                         //console.log("ccc: "+location);
@@ -67,10 +80,12 @@
                         marker.id = uniqueId;
                         uniqueId++;
 
-
+                        //we add an eventlistener function to delete markers when clicked
                         google.maps.event.addListener(marker, "click", function (e) {
+                            //contains the details of the marker(lat, long) and the delete button
                             var content = 'Latitude: ' + location.lat() + '<br />Longitude: ' + location.lng();
                             content += "<br /><input type = 'button' value = 'Delete' onclick = 'DeleteMarker(" + marker.id + ","+location.lat()+","+location.lng()+");' value = 'Delete' />";
+                            //the window for the delete button
                             var infoWindow = new google.maps.InfoWindow({
                                 content: content
                             });
@@ -79,14 +94,18 @@
                         markers.push(marker);
                     });
                 };
+                //delete marker function
                 function DeleteMarker(id, lat, lng) {
+                    //iterate through the markers list
                     for (var i = 0; i < markers.length; i++) {
                         if (markers[i].id == id) {
                             markers[i].setMap(null);
 
                             //Remove marker from array
+                            //the second argument refferes to the number of markers to be removed
                             markers.splice(i, 1);
-
+                            
+                            //make a request to the controller to remove markers from db
                             var xhr = new XMLHttpRequest();
                             var new_location = {};
                             new_location.lat = lat;
