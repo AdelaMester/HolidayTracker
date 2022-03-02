@@ -1,7 +1,5 @@
 TRACK YOUR TRIPS
 
-MY VIDEO: https://www.youtube.com/watch?v=E-XCzs7yW0k
-
 Description:
 
 I have created a web application that allows users to track their past trips by adding a marker on the map.

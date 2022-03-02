@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+image: gitlab/dind
+
+services:
+  - docker:dind
+
+>>>>>>> 3a0023d4ca1a072ceff57a3afee9424dfdcad4a8
 stages:
   - build
   - test
@@ -9,4 +17,7 @@ sast:
    - docker pull secfigo/bandit
    - docker run --user $(id -u):$(id -g) -v $(pwd):/src --rm secfigo/bandit bandit -r /src
   allow_failure: true
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3a0023d4ca1a072ceff57a3afee9424dfdcad4a8
